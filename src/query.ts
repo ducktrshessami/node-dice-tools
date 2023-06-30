@@ -1,6 +1,12 @@
 import { RollQueryError } from "./error";
 
 export const RollQueryPattern = /^(?:[+-]?\s*(?:\d*d)?\d+)(?:\s*[+-]\s*(?:\d*d)?\d+)*$/i;
+
+/**
+ * Includes the `sign`, `count`, and `sides` groups
+ * 
+ * If `count` is null, the item is a constant of value `sides`
+ */
 export const RollQueryItemPattern = /(?<sign>[+-])?\s*(?:(?<count>\d*)d)?(?<sides>\d+)/gi;
 
 function validateAttribute(n: number, label: string): void {
