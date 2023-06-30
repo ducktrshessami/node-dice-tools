@@ -1,4 +1,4 @@
-import { RollQueryError } from "./error";
+import { validateDiceAttribute } from "./validate";
 
 export const RollQueryPattern = /^(?:[+-]?\s*(?:\d*d)?\d+)(?:\s*[+-]\s*(?:\d*d)?\d+)*$/i;
 
@@ -9,21 +9,14 @@ export const RollQueryPattern = /^(?:[+-]?\s*(?:\d*d)?\d+)(?:\s*[+-]\s*(?:\d*d)?
  */
 export const RollQueryItemPattern = /(?<sign>[+-])?\s*(?:(?<count>\d*)d)?(?<sides>\d+)/gi;
 
-function validateAttribute(n: number, label: string): void {
-    if (n < 1 || Math.floor(n) !== n) {
-        const value = typeof n === "string" ? `'${n}'` : n;
-        throw new RollQueryError(`${label} must be a positive whole number. Received ${value}`);
-    }
-}
-
 export class RollQueryItem {
     constructor(
         public count: number,
         public sides: number,
         public negative: boolean = false
     ) {
-        validateAttribute(count, "Dice count");
-        validateAttribute(sides, "Sides");
+        validateDiceAttribute(count, "Dice count");
+        validateDiceAttribute(sides, "Sides");
     }
 }
 
