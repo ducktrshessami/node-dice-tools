@@ -1,1 +1,1 @@
-export { RollQuery, RollQueryItem } from "./query";
+export * from "./query";
