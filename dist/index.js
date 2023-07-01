@@ -45,6 +45,10 @@ function validateDiceAttribute(n, label) {
     throw new RollQueryError(`${label} must be a positive whole number. Received ${value}`);
   }
 }
+function validateDiceAttributes(count, sides) {
+  validateDiceAttribute(count, "Dice count");
+  validateDiceAttribute(sides, "Sides");
+}
 
 // src/roll.ts
 function rawRoll(count, sides) {
@@ -55,8 +59,7 @@ function rawRoll(count, sides) {
   return result;
 }
 function roll(count, sides) {
-  validateDiceAttribute(count, "Dice count");
-  validateDiceAttribute(sides, "Sides");
+  validateDiceAttributes(count, sides);
   return rawRoll(count, sides);
 }
 
@@ -69,8 +72,7 @@ var RollQueryItem = class {
     this.sides = sides;
     this.negative = negative;
     this.lastResult = null;
-    validateDiceAttribute(count, "Dice count");
-    validateDiceAttribute(sides, "Sides");
+    validateDiceAttributes(count, sides);
   }
   roll() {
     this.lastResult = rawRoll(this.count, this.sides) * (this.negative ? -1 : 1);
