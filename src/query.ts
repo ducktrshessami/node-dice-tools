@@ -21,6 +21,11 @@ export class RollQueryItem {
         this.lastResult = rawRoll(this.count, this.sides) * (this.negative ? -1 : 1);
         return this.lastResult;
     }
+
+    toString(forceSign: boolean = false): string {
+        const sign = this.negative ? "-" : forceSign ? "+" : "";
+        return `${sign}${this.count}d${this.sides}`;
+    }
 }
 
 export type RollQueryOptions = {
@@ -76,5 +81,17 @@ export class RollQuery {
 
     roll(): number {
         return this.constant + this.items.reduce((result, item) => result + item.roll(), 0);
+    }
+
+    toString(): string {
+        const constant = this.constant ? (this.constant < 0 ? "-" : "+") + this.constant : "";
+        if (!this.items.length) {
+            return constant;
+        }
+        let query = this.items[0].toString();
+        for (let i = 1; i < this.items.length; i++) {
+            query += this.items[i].toString(true);
+        }
+        return query + constant;
     }
 }
