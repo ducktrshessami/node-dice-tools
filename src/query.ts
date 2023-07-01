@@ -17,6 +17,18 @@ export class RollQueryItem {
         validateDiceAttributes(count, sides);
     }
 
+    private get rawMax(): number {
+        return this.count * this.sides;
+    }
+
+    get min(): number {
+        return this.negative ? this.rawMax * -1 : this.count;
+    }
+
+    get max(): number {
+        return this.negative ? this.count * -1 : this.rawMax;
+    }
+
     roll(): number {
         this.lastResult = rawRoll(this.count, this.sides) * (this.negative ? -1 : 1);
         return this.lastResult;
@@ -64,6 +76,14 @@ export class RollQuery {
             }
         }
         return q;
+    }
+
+    get min(): number {
+        return this.items.reduce((min, item) => min + item.min, this.constant);
+    }
+
+    get max(): number {
+        return this.items.reduce((max, item) => max + item.max, this.constant);
     }
 
     get lastResult(): number | null {
