@@ -1,14 +1,9 @@
 import { rawRoll } from "./roll";
-import { validateDiceAttributes } from "./validate";
-
-export const RollQueryPattern = /^(?:[+-]?\s*(?:\d*d)?\d+)(?:\s*[+-]\s*(?:\d*d)?\d+)*$/i;
-
-/**
- * Includes the `sign`, `count`, and `sides` groups
- * 
- * If `count` is null, the item is a constant of value `sides`
- */
-export const RollQueryItemPattern = /(?<sign>[+-])?\s*(?:(?<count>\d*)d)?(?<sides>\d+)/gi;
+import {
+    RollQueryItemPattern,
+    RollQueryPattern,
+    validateDiceAttributes
+} from "./validate";
 
 export class RollQueryItem {
     public lastResult: number | null;
