@@ -1,5 +1,5 @@
 import { rawRoll } from "./roll";
-import { validateDiceAttribute } from "./validate";
+import { validateDiceAttributes } from "./validate";
 
 export const RollQueryPattern = /^(?:[+-]?\s*(?:\d*d)?\d+)(?:\s*[+-]\s*(?:\d*d)?\d+)*$/i;
 
@@ -19,8 +19,7 @@ export class RollQueryItem {
         public negative: boolean = false
     ) {
         this.lastResult = null;
-        validateDiceAttribute(count, "Dice count");
-        validateDiceAttribute(sides, "Sides");
+        validateDiceAttributes(count, sides);
     }
 
     roll(): number {

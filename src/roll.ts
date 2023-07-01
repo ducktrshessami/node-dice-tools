@@ -1,4 +1,4 @@
-import { validateDiceAttribute } from "./validate";
+import { validateDiceAttributes } from "./validate";
 
 export function rawRoll(count: number, sides: number): number {
     let result = 0;
@@ -9,7 +9,6 @@ export function rawRoll(count: number, sides: number): number {
 }
 
 export function roll(count: number, sides: number): number {
-    validateDiceAttribute(count, "Dice count");
-    validateDiceAttribute(sides, "Sides");
+    validateDiceAttributes(count, sides);
     return rawRoll(count, sides);
 }
