@@ -1,3 +1,4 @@
+import { rawRoll } from "./roll";
 import { validateDiceAttribute } from "./validate";
 
 export const RollQueryPattern = /^(?:[+-]?\s*(?:\d*d)?\d+)(?:\s*[+-]\s*(?:\d*d)?\d+)*$/i;
@@ -10,13 +11,21 @@ export const RollQueryPattern = /^(?:[+-]?\s*(?:\d*d)?\d+)(?:\s*[+-]\s*(?:\d*d)?
 export const RollQueryItemPattern = /(?<sign>[+-])?\s*(?:(?<count>\d*)d)?(?<sides>\d+)/gi;
 
 export class RollQueryItem {
+    public lastResult: number | null;
+
     constructor(
         public count: number,
         public sides: number,
         public negative: boolean = false
     ) {
+        this.lastResult = null;
         validateDiceAttribute(count, "Dice count");
         validateDiceAttribute(sides, "Sides");
+    }
+
+    roll(): number {
+        this.lastResult = rawRoll(this.count, this.sides) * (this.negative ? -1 : 1);
+        return this.lastResult;
     }
 }
 
@@ -56,5 +65,9 @@ export class RollQuery {
             }
         }
         return q;
+    }
+
+    roll(): number {
+        return this.constant + this.items.reduce((result, item) => result + item.roll(), 0);
     }
 }
