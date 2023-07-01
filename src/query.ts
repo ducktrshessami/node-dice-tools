@@ -67,6 +67,19 @@ export class RollQuery {
         return q;
     }
 
+    get lastResult(): number | null {
+        let result = this.constant;
+        for (const item of this.items) {
+            if (item.lastResult == null) {
+                return null;
+            }
+            else {
+                result += item.lastResult;
+            }
+        }
+        return result;
+    }
+
     roll(): number {
         return this.constant + this.items.reduce((result, item) => result + item.roll(), 0);
     }
