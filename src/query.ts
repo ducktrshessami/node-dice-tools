@@ -46,8 +46,8 @@ export type RollQueryOptions = {
 };
 
 export class RollQuery {
-    items: RollQueryItem[];
-    constant: number;
+    public items: RollQueryItem[];
+    public constant: number;
 
     constructor({ items, constant }: RollQueryOptions = {}) {
         this.items = items ?? [];
