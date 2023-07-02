@@ -50,6 +50,22 @@ export class RollResult {
     }
 }
 
+export class MultiRollResult {
+    public readonly results: readonly RollResult[]
+
+    constructor(results: RollResult[]) {
+        this.results = Object.freeze(results);
+    }
+
+    get highest(): RollResult {
+        return this.results.reduce((highest, result) => result.value > highest.value ? result : highest);
+    }
+
+    get lowest(): RollResult {
+        return this.results.reduce((lowest, result) => result.value < lowest.value ? result : lowest);
+    }
+}
+
 export function rawRoll(count: number, sides: number): RollResult {
     const result = [];
     for (let i = 0; i < count; i++) {
@@ -61,4 +77,35 @@ export function rawRoll(count: number, sides: number): RollResult {
 export function roll(count: number, sides: number): RollResult {
     validateDiceAttributes(count, sides);
     return rawRoll(count, sides);
+}
+
+export function rawRollMulti(
+    count: number,
+    sides: number,
+    rolls: number
+): MultiRollResult {
+    const results = [];
+    for (let i = 0; i < rolls; i++) {
+        results.push(rawRoll(count, sides));
+    }
+    return new MultiRollResult(results);
+}
+
+export function rollMulti(
+    count: number,
+    sides: number,
+    rolls: number
+): MultiRollResult {
+    validateDiceAttributes(count, sides);
+    return rawRollMulti(count, sides, rolls);
+}
+
+export function rollAdvantage(count: number, sides: number): RollResult {
+    const { highest } = rollMulti(count, sides, 2);
+    return highest;
+}
+
+export function rollDisadvantage(count: number, sides: number): RollResult {
+    const { lowest } = rollMulti(count, sides, 2);
+    return lowest;
 }
