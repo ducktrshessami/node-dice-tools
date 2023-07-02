@@ -2,7 +2,16 @@ declare class RollResult {
     readonly raw: readonly number[];
     constructor(raw: number[]);
     get value(): number;
+    getHits(threshold: number): number;
+    getMisses(threshold: number): number;
+    getNetHits(hit: number, miss: number): number;
     valueOf(): number;
+}
+declare class MultiRollResult {
+    readonly results: readonly RollResult[];
+    constructor(results: RollResult[]);
+    get highest(): RollResult;
+    get lowest(): RollResult;
 }
 declare function roll(count: number, sides: number): RollResult;
 
@@ -17,6 +26,9 @@ declare class RollQueryItem {
     get max(): number;
     get lastValue(): number | null;
     roll(): number;
+    rollMulti(rolls: number): MultiRollResult;
+    rollAdvantage(): number;
+    rollDisadvantage(): number;
     toString(forceSign?: boolean): string;
 }
 type RollQueryOptions = {
@@ -32,6 +44,8 @@ declare class RollQuery {
     get max(): number;
     get lastValue(): number | null;
     roll(): number;
+    rollAdvantage(): number;
+    rollDisadvantage(): number;
     toString(): string;
 }
 

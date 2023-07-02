@@ -38,6 +38,10 @@ var CustomError = class extends Error {
 };
 var RollQueryError = class extends CustomError {
 };
+var RollResultError = class extends CustomError {
+};
+var RollResultParseError = class extends CustomError {
+};
 
 // src/validate.ts
 var RollQueryPattern = /^(?:[+-]?\s*(?:\d*d)?\d+)(?:\s*[+-]\s*(?:\d*d)?\d+)*$/i;
@@ -52,17 +56,64 @@ function validateDiceAttributes(count, sides) {
   validateDiceAttribute(count, "Dice count");
   validateDiceAttribute(sides, "Sides");
 }
+function validateNonEmptyArray(arr) {
+  if (!arr.length) {
+    throw new RollResultError(`Result array must not be empty`);
+  }
+}
 
 // src/roll.ts
 var RollResult = class {
   constructor(raw) {
+    validateNonEmptyArray(raw);
     this.raw = Object.freeze(raw);
   }
   get value() {
     return this.raw.reduce((total, result) => total + result);
   }
+  getHits(threshold) {
+    return this.raw.reduce((hits, result) => {
+      if (result >= threshold) {
+        hits++;
+      }
+      return hits;
+    }, 0);
+  }
+  getMisses(threshold) {
+    return this.raw.reduce((misses, result) => {
+      if (result <= threshold) {
+        misses++;
+      }
+      return misses;
+    }, 0);
+  }
+  getNetHits(hit, miss) {
+    if (hit <= miss) {
+      throw new RollResultParseError(`Hit threshold must be greater than miss threshold. Received hit:${hit} miss:${miss}`);
+    }
+    return this.raw.reduce((hits, result) => {
+      if (result >= hit) {
+        hits++;
+      } else if (result <= miss) {
+        hits--;
+      }
+      return hits;
+    }, 0);
+  }
   valueOf() {
     return this.value;
+  }
+};
+var MultiRollResult = class {
+  constructor(results) {
+    validateNonEmptyArray(results);
+    this.results = Object.freeze(results);
+  }
+  get highest() {
+    return this.results.reduce((highest, result) => result.value > highest.value ? result : highest);
+  }
+  get lowest() {
+    return this.results.reduce((lowest, result) => result.value < lowest.value ? result : lowest);
   }
 };
 function rawRoll(count, sides) {
@@ -75,6 +126,13 @@ function rawRoll(count, sides) {
 function roll(count, sides) {
   validateDiceAttributes(count, sides);
   return rawRoll(count, sides);
+}
+function rawRollMulti(count, sides, rolls) {
+  const results = [];
+  for (let i = 0; i < rolls; i++) {
+    results.push(rawRoll(count, sides));
+  }
+  return new MultiRollResult(results);
 }
 
 // src/query.ts
@@ -100,6 +158,21 @@ var RollQueryItem = class {
   }
   roll() {
     this.lastResult = rawRoll(this.count, this.sides);
+    return this.lastValue;
+  }
+  rollMulti(rolls) {
+    const result = rawRollMulti(this.count, this.sides, rolls);
+    this.lastResult = result.results[rolls - 1];
+    return result;
+  }
+  rollAdvantage() {
+    const { highest } = rawRollMulti(this.count, this.sides, 2);
+    this.lastResult = highest;
+    return this.lastValue;
+  }
+  rollDisadvantage() {
+    const { lowest } = rawRollMulti(this.count, this.sides, 2);
+    this.lastResult = lowest;
     return this.lastValue;
   }
   toString(forceSign = false) {
@@ -153,6 +226,12 @@ var RollQuery = class _RollQuery {
   }
   roll() {
     return this.items.reduce((result, item) => result + item.roll(), this.constant);
+  }
+  rollAdvantage() {
+    return this.items.reduce((result, item) => result + item.rollAdvantage(), this.constant);
+  }
+  rollDisadvantage() {
+    return this.items.reduce((result, item) => result + item.rollDisadvantage(), this.constant);
   }
   toString() {
     const constant = this.constant ? (this.constant < 0 ? "-" : "+") + this.constant : "";
