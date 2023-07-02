@@ -23,12 +23,23 @@ function validateDiceAttributes(count, sides) {
 }
 
 // src/roll.ts
-function rawRoll(count, sides) {
-  let result = 0;
-  for (let i = 0; i < count; i++) {
-    result += Math.ceil(Math.random() * sides);
+var RollResult = class {
+  constructor(raw) {
+    this.raw = Object.freeze(raw);
   }
-  return result;
+  get value() {
+    return this.raw.reduce((total, result) => total + result);
+  }
+  valueOf() {
+    return this.value;
+  }
+};
+function rawRoll(count, sides) {
+  const result = [];
+  for (let i = 0; i < count; i++) {
+    result.push(Math.ceil(Math.random() * sides));
+  }
+  return new RollResult(result);
 }
 function roll(count, sides) {
   validateDiceAttributes(count, sides);
@@ -53,9 +64,12 @@ var RollQueryItem = class {
   get max() {
     return this.negative ? this.count * -1 : this.rawMax;
   }
+  get lastValue() {
+    return this.lastResult ? this.lastResult.value * (this.negative ? -1 : 1) : null;
+  }
   roll() {
-    this.lastResult = rawRoll(this.count, this.sides) * (this.negative ? -1 : 1);
-    return this.lastResult;
+    this.lastResult = rawRoll(this.count, this.sides);
+    return this.lastValue;
   }
   toString(forceSign = false) {
     const sign = this.negative ? "-" : forceSign ? "+" : "";
@@ -95,19 +109,19 @@ var RollQuery = class _RollQuery {
   get max() {
     return this.items.reduce((max, item) => max + item.max, this.constant);
   }
-  get lastResult() {
+  get lastValue() {
     let result = this.constant;
     for (const item of this.items) {
-      if (item.lastResult == null) {
+      if (item.lastValue == null) {
         return null;
       } else {
-        result += item.lastResult;
+        result += item.lastValue;
       }
     }
     return result;
   }
   roll() {
-    return this.constant + this.items.reduce((result, item) => result + item.roll(), 0);
+    return this.items.reduce((result, item) => result + item.roll(), this.constant);
   }
   toString() {
     const constant = this.constant ? (this.constant < 0 ? "-" : "+") + this.constant : "";
@@ -126,6 +140,7 @@ export {
   RollQueryItem,
   RollQueryItemPattern,
   RollQueryPattern,
+  RollResult,
   roll
 };
 //# sourceMappingURL=index.mjs.map
