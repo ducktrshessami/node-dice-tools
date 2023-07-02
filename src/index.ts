@@ -1,6 +1,7 @@
 export * from "./query";
 export {
     MultiRollResult,
+    RollMethod,
     RollResult,
     roll,
     rollAdvantage,
