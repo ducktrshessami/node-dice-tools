@@ -100,7 +100,7 @@ export class RollQuery {
     }
 
     roll(): number {
-        return this.constant + this.items.reduce((result, item) => result + item.roll(), 0);
+        return this.items.reduce((result, item) => result + item.roll(), this.constant);
     }
 
     toString(): string {
