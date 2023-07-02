@@ -69,7 +69,7 @@ export class MultiRollResult {
 }
 
 export function rawRoll(count: number, sides: number): RollResult {
-    const result = [];
+    const result: number[] = [];
     for (let i = 0; i < count; i++) {
         result.push(Math.ceil(Math.random() * sides));
     }
@@ -86,7 +86,7 @@ export function rawRollMulti(
     sides: number,
     rolls: number
 ): MultiRollResult {
-    const results = [];
+    const results: RollResult[] = [];
     for (let i = 0; i < rolls; i++) {
         results.push(rawRoll(count, sides));
     }
