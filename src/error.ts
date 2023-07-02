@@ -6,3 +6,4 @@ class CustomError extends Error {
 }
 
 export class RollQueryError extends CustomError { }
+export class RollResultParseError extends CustomError { }
