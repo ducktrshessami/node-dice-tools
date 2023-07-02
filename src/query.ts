@@ -1,5 +1,6 @@
 import {
     MultiRollResult,
+    Bounds,
     RollResult,
     rawRoll,
     rawRollMulti
@@ -38,25 +39,25 @@ export class RollQueryItem {
         return this.lastResult ? this.lastResult.value * (this.negative ? -1 : 1) : null;
     }
 
-    roll(): number {
-        this.lastResult = rawRoll(this.count, this.sides);
+    roll(explode?: number | Bounds): number {
+        this.lastResult = rawRoll(this.count, this.sides, explode);
         return this.lastValue!;
     }
 
-    rollMulti(rolls: number): MultiRollResult {
-        const result = rawRollMulti(this.count, this.sides, rolls);
+    rollMulti(rolls: number, explode?: number | Bounds): MultiRollResult {
+        const result = rawRollMulti(this.count, this.sides, rolls, explode);
         this.lastResult = result.results[rolls - 1];
         return result;
     }
 
-    rollAdvantage(): number {
-        const { highest } = rawRollMulti(this.count, this.sides, 2);
+    rollAdvantage(explode?: number | Bounds): number {
+        const { highest } = rawRollMulti(this.count, this.sides, 2, explode);
         this.lastResult = highest;
         return this.lastValue!;
     }
 
-    rollDisadvantage(): number {
-        const { lowest } = rawRollMulti(this.count, this.sides, 2);
+    rollDisadvantage(explode?: number | Bounds): number {
+        const { lowest } = rawRollMulti(this.count, this.sides, 2, explode);
         this.lastResult = lowest;
         return this.lastValue!;
     }
