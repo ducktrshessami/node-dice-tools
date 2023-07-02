@@ -105,16 +105,24 @@ export class RollQuery {
         return q;
     }
 
+    get minNat(): number {
+        return this.items.reduce((min, item) => min + item.min, 0);
+    }
+
     get min(): number {
-        return this.items.reduce((min, item) => min + item.min, this.constant);
+        return this.minNat + this.constant;
+    }
+
+    get maxNat(): number {
+        return this.items.reduce((max, item) => max + item.max, 0);
     }
 
     get max(): number {
-        return this.items.reduce((max, item) => max + item.max, this.constant);
+        return this.maxNat + this.constant;
     }
 
-    get lastValue(): number | null {
-        let result = this.constant;
+    get lastNat(): number | null {
+        let result = 0;
         for (const item of this.items) {
             if (item.lastValue == null) {
                 return null;
@@ -124,6 +132,11 @@ export class RollQuery {
             }
         }
         return result;
+    }
+
+    get lastValue(): number | null {
+        const natural = this.lastNat;
+        return natural == null ? null : natural + this.constant;
     }
 
     roll(): number {
