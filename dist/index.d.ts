@@ -43,8 +43,11 @@ declare class RollQuery {
     constant: number;
     constructor({ items, constant }?: RollQueryOptions);
     static parse(query: string): RollQuery | null;
+    get minNat(): number;
     get min(): number;
+    get maxNat(): number;
     get max(): number;
+    get lastNat(): number | null;
     get lastValue(): number | null;
     roll(): number;
     rollAdvantage(): number;
