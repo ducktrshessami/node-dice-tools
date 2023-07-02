@@ -68,10 +68,28 @@ export class MultiRollResult {
     }
 }
 
-export function rawRoll(count: number, sides: number): RollResult {
+export type Bounds = [number, number];
+
+export function rawRoll(
+    count: number,
+    sides: number,
+    explode?: number | Bounds
+): RollResult {
     const result: number[] = [];
     for (let i = 0; i < count; i++) {
-        result.push(Math.ceil(Math.random() * sides));
+        const value = Math.ceil(Math.random() * sides);
+        result.push(value);
+        if (
+            explode && (
+                typeof explode === "number" ?
+                    value === explode : (
+                        value >= Math.min(...explode) &&
+                        value <= Math.max(...explode)
+                    )
+            )
+        ) {
+            i--;
+        }
     }
     return new RollResult(result);
 }
