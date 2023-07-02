@@ -1,4 +1,4 @@
-import { rawRoll } from "./roll";
+import { RollResult, rawRoll } from "./roll";
 import {
     RollQueryItemPattern,
     RollQueryPattern,
@@ -6,7 +6,7 @@ import {
 } from "./validate";
 
 export class RollQueryItem {
-    public lastResult: number | null;
+    public lastResult: RollResult | null;
 
     constructor(
         public count: number,
@@ -29,9 +29,13 @@ export class RollQueryItem {
         return this.negative ? this.count * -1 : this.rawMax;
     }
 
+    get lastValue(): number | null {
+        return this.lastResult ? this.lastResult.value * (this.negative ? -1 : 1) : null;
+    }
+
     roll(): number {
-        this.lastResult = rawRoll(this.count, this.sides) * (this.negative ? -1 : 1);
-        return this.lastResult;
+        this.lastResult = rawRoll(this.count, this.sides);
+        return this.lastValue!;
     }
 
     toString(forceSign: boolean = false): string {
@@ -89,11 +93,11 @@ export class RollQuery {
     get lastResult(): number | null {
         let result = this.constant;
         for (const item of this.items) {
-            if (item.lastResult == null) {
+            if (item.lastValue == null) {
                 return null;
             }
             else {
-                result += item.lastResult;
+                result += item.lastValue;
             }
         }
         return result;
