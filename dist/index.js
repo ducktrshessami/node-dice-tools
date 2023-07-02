@@ -20,12 +20,16 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var src_exports = {};
 __export(src_exports, {
+  MultiRollResult: () => MultiRollResult,
   RollQuery: () => RollQuery,
   RollQueryItem: () => RollQueryItem,
   RollQueryItemPattern: () => RollQueryItemPattern,
   RollQueryPattern: () => RollQueryPattern,
   RollResult: () => RollResult,
-  roll: () => roll
+  roll: () => roll,
+  rollAdvantage: () => rollAdvantage,
+  rollDisadvantage: () => rollDisadvantage,
+  rollMulti: () => rollMulti
 });
 module.exports = __toCommonJS(src_exports);
 
@@ -134,6 +138,18 @@ function rawRollMulti(count, sides, rolls) {
   }
   return new MultiRollResult(results);
 }
+function rollMulti(count, sides, rolls) {
+  validateDiceAttributes(count, sides);
+  return rawRollMulti(count, sides, rolls);
+}
+function rollAdvantage(count, sides) {
+  const { highest } = rollMulti(count, sides, 2);
+  return highest;
+}
+function rollDisadvantage(count, sides) {
+  const { lowest } = rollMulti(count, sides, 2);
+  return lowest;
+}
 
 // src/query.ts
 var RollQueryItem = class {
@@ -234,10 +250,10 @@ var RollQuery = class _RollQuery {
     return this.items.reduce((result, item) => result + item.rollDisadvantage(), this.constant);
   }
   toString() {
-    const constant = this.constant ? (this.constant < 0 ? "-" : "+") + this.constant : "";
     if (!this.items.length) {
-      return constant;
+      return this.constant < 0 ? "-" + this.constant : this.constant.toString();
     }
+    const constant = this.constant ? (this.constant < 0 ? "-" : "+") + this.constant : "";
     let query = this.items[0].toString();
     for (let i = 1; i < this.items.length; i++) {
       query += this.items[i].toString(true);
@@ -247,11 +263,15 @@ var RollQuery = class _RollQuery {
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  MultiRollResult,
   RollQuery,
   RollQueryItem,
   RollQueryItemPattern,
   RollQueryPattern,
   RollResult,
-  roll
+  roll,
+  rollAdvantage,
+  rollDisadvantage,
+  rollMulti
 });
 //# sourceMappingURL=index.js.map

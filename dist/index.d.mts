@@ -14,6 +14,9 @@ declare class MultiRollResult {
     get lowest(): RollResult;
 }
 declare function roll(count: number, sides: number): RollResult;
+declare function rollMulti(count: number, sides: number, rolls: number): MultiRollResult;
+declare function rollAdvantage(count: number, sides: number): RollResult;
+declare function rollDisadvantage(count: number, sides: number): RollResult;
 
 declare class RollQueryItem {
     count: number;
@@ -57,4 +60,4 @@ declare const RollQueryPattern: RegExp;
  */
 declare const RollQueryItemPattern: RegExp;
 
-export { RollQuery, RollQueryItem, RollQueryItemPattern, RollQueryOptions, RollQueryPattern, RollResult, roll };
+export { MultiRollResult, RollQuery, RollQueryItem, RollQueryItemPattern, RollQueryOptions, RollQueryPattern, RollResult, roll, rollAdvantage, rollDisadvantage, rollMulti };
