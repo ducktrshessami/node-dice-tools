@@ -90,7 +90,7 @@ export class RollQuery {
         return this.items.reduce((max, item) => max + item.max, this.constant);
     }
 
-    get lastResult(): number | null {
+    get lastValue(): number | null {
         let result = this.constant;
         for (const item of this.items) {
             if (item.lastValue == null) {
