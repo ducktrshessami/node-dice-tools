@@ -1,4 +1,9 @@
-import { RollResult, rawRoll } from "./roll";
+import {
+    MultiRollResult,
+    RollResult,
+    rawRoll,
+    rawRollMulti
+} from "./roll";
 import {
     RollQueryItemPattern,
     RollQueryPattern,
@@ -35,6 +40,24 @@ export class RollQueryItem {
 
     roll(): number {
         this.lastResult = rawRoll(this.count, this.sides);
+        return this.lastValue!;
+    }
+
+    rollMulti(rolls: number): MultiRollResult {
+        const result = rawRollMulti(this.count, this.sides, rolls);
+        this.lastResult = result.results[rolls - 1];
+        return result;
+    }
+
+    rollAdvantage(): number {
+        const { highest } = rawRollMulti(this.count, this.sides, 2);
+        this.lastResult = highest;
+        return this.lastValue!;
+    }
+
+    rollDisadvantage(): number {
+        const { lowest } = rawRollMulti(this.count, this.sides, 2);
+        this.lastResult = lowest;
         return this.lastValue!;
     }
 
@@ -105,6 +128,14 @@ export class RollQuery {
 
     roll(): number {
         return this.items.reduce((result, item) => result + item.roll(), this.constant);
+    }
+
+    rollAdvantage(): number {
+        return this.items.reduce((result, item) => result + item.rollAdvantage(), this.constant);
+    }
+
+    rollDisadvantage(): number {
+        return this.items.reduce((result, item) => result + item.rollDisadvantage(), this.constant);
     }
 
     toString(): string {
