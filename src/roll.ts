@@ -1,10 +1,11 @@
 import { RollResultParseError } from "./error";
-import { validateDiceAttributes } from "./validate";
+import { validateDiceAttributes, validateNonEmptyArray } from "./validate";
 
 export class RollResult {
     public readonly raw: readonly number[];
 
     constructor(raw: number[]) {
+        validateNonEmptyArray(raw);
         this.raw = Object.freeze(raw);
     }
 
@@ -54,6 +55,7 @@ export class MultiRollResult {
     public readonly results: readonly RollResult[]
 
     constructor(results: RollResult[]) {
+        validateNonEmptyArray(results);
         this.results = Object.freeze(results);
     }
 

@@ -1,4 +1,4 @@
-import { RollQueryError } from "./error";
+import { RollQueryError, RollResultError } from "./error";
 
 export const RollQueryPattern = /^(?:[+-]?\s*(?:\d*d)?\d+)(?:\s*[+-]\s*(?:\d*d)?\d+)*$/i;
 
@@ -19,4 +19,10 @@ function validateDiceAttribute(n: number, label: string): void {
 export function validateDiceAttributes(count: number, sides: number): void {
     validateDiceAttribute(count, "Dice count");
     validateDiceAttribute(sides, "Sides");
+}
+
+export function validateNonEmptyArray(arr: any[]): void {
+    if (!arr.length) {
+        throw new RollResultError(`Result array must not be empty`);
+    }
 }
