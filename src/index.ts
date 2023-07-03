@@ -1,5 +1,6 @@
 export * from "./query";
 export {
+    Bounds,
     MultiRollResult,
     RollMethod,
     RollResult,
