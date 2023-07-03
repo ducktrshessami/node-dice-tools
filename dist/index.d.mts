@@ -1,3 +1,6 @@
+type RollMethod = (sides: number) => number;
+declare function setRollMethod(method: RollMethod): void;
+declare function getRollMethod(): RollMethod;
 declare class RollResult {
     readonly raw: readonly number[];
     constructor(raw: number[]);
@@ -63,4 +66,4 @@ declare const RollQueryPattern: RegExp;
  */
 declare const RollQueryItemPattern: RegExp;
 
-export { MultiRollResult, RollQuery, RollQueryItem, RollQueryItemPattern, RollQueryOptions, RollQueryPattern, RollResult, roll, rollAdvantage, rollDisadvantage, rollMulti };
+export { MultiRollResult, RollMethod, RollQuery, RollQueryItem, RollQueryItemPattern, RollQueryOptions, RollQueryPattern, RollResult, getRollMethod, roll, rollAdvantage, rollDisadvantage, rollMulti, setRollMethod };
