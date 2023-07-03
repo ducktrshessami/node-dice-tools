@@ -1,6 +1,21 @@
 import { RollResultParseError } from "./error";
 import { validateDiceAttributes, validateNonEmptyArray } from "./validate";
 
+export type RollMethod = (sides: number) => number;
+let rollMethod: RollMethod | null = null;
+
+export function setRollMethod(method: RollMethod): void {
+    rollMethod = method;
+}
+
+function defaultRollMethod(sides: number): number {
+    return Math.ceil(Math.random() * sides);
+}
+
+export function getRollMethod(): RollMethod {
+    return rollMethod ?? defaultRollMethod;
+}
+
 export class RollResult {
     public readonly raw: readonly number[];
 
@@ -69,9 +84,10 @@ export class MultiRollResult {
 }
 
 export function rawRoll(count: number, sides: number): RollResult {
+    const method = getRollMethod();
     const result: number[] = [];
     for (let i = 0; i < count; i++) {
-        result.push(Math.ceil(Math.random() * sides));
+        result.push(method(sides));
     }
     return new RollResult(result);
 }
