@@ -16,10 +16,11 @@ declare class MultiRollResult {
     get highest(): RollResult;
     get lowest(): RollResult;
 }
-declare function roll(count: number, sides: number): RollResult;
-declare function rollMulti(count: number, sides: number, rolls: number): MultiRollResult;
-declare function rollAdvantage(count: number, sides: number): RollResult;
-declare function rollDisadvantage(count: number, sides: number): RollResult;
+type Bounds = [number, number];
+declare function roll(count: number, sides: number, explode?: number | Bounds): RollResult;
+declare function rollMulti(count: number, sides: number, rolls: number, explode?: number | Bounds): MultiRollResult;
+declare function rollAdvantage(count: number, sides: number, explode?: number | Bounds): RollResult;
+declare function rollDisadvantage(count: number, sides: number, explode?: number | Bounds): RollResult;
 
 declare class RollQueryItem {
     count: number;
@@ -31,10 +32,10 @@ declare class RollQueryItem {
     get min(): number;
     get max(): number;
     get lastValue(): number | null;
-    roll(): number;
-    rollMulti(rolls: number): MultiRollResult;
-    rollAdvantage(): number;
-    rollDisadvantage(): number;
+    roll(explode?: number | Bounds): number;
+    rollMulti(rolls: number, explode?: number | Bounds): MultiRollResult;
+    rollAdvantage(explode?: number | Bounds): number;
+    rollDisadvantage(explode?: number | Bounds): number;
     toString(forceSign?: boolean): string;
 }
 type RollQueryOptions = {
@@ -66,4 +67,4 @@ declare const RollQueryPattern: RegExp;
  */
 declare const RollQueryItemPattern: RegExp;
 
-export { MultiRollResult, RollMethod, RollQuery, RollQueryItem, RollQueryItemPattern, RollQueryOptions, RollQueryPattern, RollResult, getRollMethod, roll, rollAdvantage, rollDisadvantage, rollMulti, setRollMethod };
+export { Bounds, MultiRollResult, RollMethod, RollQuery, RollQueryItem, RollQueryItemPattern, RollQueryOptions, RollQueryPattern, RollResult, getRollMethod, roll, rollAdvantage, rollDisadvantage, rollMulti, setRollMethod };
