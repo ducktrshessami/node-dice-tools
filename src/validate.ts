@@ -9,16 +9,20 @@ export const RollQueryPattern = /^(?:[+-]?\s*(?:\d*d)?\d+)(?:\s*[+-]\s*(?:\d*d)?
  */
 export const RollQueryItemPattern = /(?<sign>[+-])?\s*(?:(?<count>\d*)d)?(?<sides>\d+)/gi;
 
-function validateDiceAttribute(n: number, label: string): void {
-    if (n < 1 || Math.floor(n) !== n) {
+function validateDiceAttribute(
+    n: number,
+    lowerBound: number,
+    message: string
+): void {
+    if (n < lowerBound || Math.floor(n) !== n) {
         const value = typeof n === "string" ? `'${n}'` : n;
-        throw new RollQueryError(`${label} must be a positive whole number. Received ${value}`);
+        throw new RollQueryError(`${message}. Received ${value}`);
     }
 }
 
 export function validateDiceAttributes(count: number, sides: number): void {
-    validateDiceAttribute(count, "Dice count");
-    validateDiceAttribute(sides, "Sides");
+    validateDiceAttribute(count, 1, "Dice count must be a positive whole number");
+    validateDiceAttribute(sides, 2, "Sides must be >= 2 and a whole number");
 }
 
 export function validateNonEmptyArray(arr: any[]): void {
