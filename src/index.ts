@@ -2,10 +2,13 @@ export * from "./query";
 export {
     Bounds,
     MultiRollResult,
+    RollMethod,
     RollResult,
+    getRollMethod,
     roll,
     rollAdvantage,
     rollDisadvantage,
-    rollMulti
+    rollMulti,
+    setRollMethod
 } from "./roll";
 export { RollQueryItemPattern, RollQueryPattern } from "./validate";
