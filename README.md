@@ -3,7 +3,7 @@ Standard dice notation parsing and rolling
 
 # Usage
 ```js
-const { RollQuery, roll } = require("./dist");
+const { RollQuery, roll } = require("dice-tools");
 
 const query = RollQuery.parse("-2d8+3+10d6+7+12d4");
 console.log(`${query.roll()}/${query.max}`); // x/116
