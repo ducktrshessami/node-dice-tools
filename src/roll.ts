@@ -4,7 +4,7 @@ import { validateDiceAttributes, validateNonEmptyArray } from "./validate";
 export type RollMethod = (sides: number) => number;
 let rollMethod: RollMethod | null = null;
 
-export function setRollMethod(method: RollMethod): void {
+export function setRollMethod(method: RollMethod | null): void {
     rollMethod = method;
 }
 
