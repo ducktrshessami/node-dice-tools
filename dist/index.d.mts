@@ -1,5 +1,5 @@
 type RollMethod = (sides: number) => number;
-declare function setRollMethod(method: RollMethod): void;
+declare function setRollMethod(method: RollMethod | null): void;
 declare function getRollMethod(): RollMethod;
 declare class RollResult {
     readonly raw: readonly number[];
