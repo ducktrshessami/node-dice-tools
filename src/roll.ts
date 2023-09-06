@@ -21,12 +21,10 @@ export type ExplodeOption = boolean | number | Bounds;
 
 export class RollResult {
     public readonly raw: readonly number[];
-    public readonly explode: ExplodeOption;
 
-    constructor(raw: number[], explode?: ExplodeOption) {
+    constructor(raw: number[], public readonly explode: Readonly<ExplodeOption>) {
         validateNonEmptyArray(raw);
         this.raw = Object.freeze(raw);
-        this.explode = explode ?? false;
     }
 
     get value(): number {
@@ -79,7 +77,7 @@ export class MultiRollResult {
         this.results = Object.freeze(results);
     }
 
-    get explode(): ExplodeOption {
+    get explode(): Readonly<ExplodeOption> {
         const result = this.results.find(result => result.explode !== false);
         return result?.explode ?? false;
     }
@@ -93,14 +91,16 @@ export class MultiRollResult {
     }
 }
 
-export function resolveExplodeOption(explode?: ExplodeOption): ExplodeOption {
-    return Array.isArray(explode) ? <Bounds>explode.slice(0, 2).sort() : explode ?? false;
+export function resolveExplodeOption(explode?: ExplodeOption): Readonly<ExplodeOption> {
+    return Array.isArray(explode) ?
+        <Readonly<Bounds>>Object.freeze(explode.slice(0, 2).sort()) :
+        explode ?? false;
 }
 
 function isExplode(
     value: number,
     sides: number,
-    explode?: ExplodeOption
+    explode: Readonly<ExplodeOption>
 ): boolean {
     if (!explode) {
         return false;
@@ -115,7 +115,7 @@ function isExplode(
 export function rawRoll(
     count: number,
     sides: number,
-    explode: ExplodeOption
+    explode: Readonly<ExplodeOption>
 ): RollResult {
     const method = getRollMethod();
     const result: number[] = [];
