@@ -140,16 +140,16 @@ export class RollQuery {
         return natural == null ? null : natural + this.constant;
     }
 
-    roll(): number {
-        return this.items.reduce((result, item) => result + item.roll(), this.constant);
+    roll(explode?: ExplodeOption): number {
+        return this.items.reduce((result, item) => result + item.roll(explode), this.constant);
     }
 
-    rollAdvantage(): number {
-        return this.items.reduce((result, item) => result + item.rollAdvantage(), this.constant);
+    rollAdvantage(explode?: ExplodeOption): number {
+        return this.items.reduce((result, item) => result + item.rollAdvantage(explode), this.constant);
     }
 
-    rollDisadvantage(): number {
-        return this.items.reduce((result, item) => result + item.rollDisadvantage(), this.constant);
+    rollDisadvantage(explode?: ExplodeOption): number {
+        return this.items.reduce((result, item) => result + item.rollDisadvantage(explode), this.constant);
     }
 
     toString(): string {
