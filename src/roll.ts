@@ -93,6 +93,10 @@ export class MultiRollResult {
     }
 }
 
+export function resolveExplodeOption(explode?: ExplodeOption): ExplodeOption {
+    return Array.isArray(explode) ? <Bounds>explode.slice(0, 2).sort() : explode ?? false;
+}
+
 function isExplode(
     value: number,
     sides: number,
@@ -111,19 +115,18 @@ function isExplode(
 export function rawRoll(
     count: number,
     sides: number,
-    explode?: ExplodeOption
+    explode: ExplodeOption
 ): RollResult {
     const method = getRollMethod();
     const result: number[] = [];
-    const explodeOption = Array.isArray(explode) ? <Bounds>explode.slice(0, 2).sort() : explode;
     for (let i = 0; i < count; i++) {
         const value = method(sides);
         result.push(value);
-        if (isExplode(value, sides, explodeOption)) {
+        if (isExplode(value, sides, explode)) {
             i--;
         }
     }
-    return new RollResult(result, explodeOption);
+    return new RollResult(result, explode);
 }
 
 export function roll(
@@ -132,7 +135,7 @@ export function roll(
     explode?: ExplodeOption
 ): RollResult {
     validateDiceAttributes(count, sides);
-    return rawRoll(count, sides, explode);
+    return rawRoll(count, sides, resolveExplodeOption(explode));
 }
 
 export function rawRollMulti(
@@ -142,8 +145,9 @@ export function rawRollMulti(
     explode?: ExplodeOption
 ): MultiRollResult {
     const results: RollResult[] = [];
+    const explodeOption = resolveExplodeOption(explode);
     for (let i = 0; i < rolls; i++) {
-        results.push(rawRoll(count, sides, explode));
+        results.push(rawRoll(count, sides, explodeOption));
     }
     return new MultiRollResult(results);
 }

@@ -3,7 +3,8 @@ import {
     RollResult,
     rawRoll,
     rawRollMulti,
-    ExplodeOption
+    ExplodeOption,
+    resolveExplodeOption
 } from "./roll";
 import {
     RollQueryItemPattern,
@@ -40,7 +41,7 @@ export class RollQueryItem {
     }
 
     roll(explode?: ExplodeOption): number {
-        this.lastResult = rawRoll(this.count, this.sides, explode);
+        this.lastResult = rawRoll(this.count, this.sides, resolveExplodeOption(explode));
         return this.lastValue!;
     }
 
