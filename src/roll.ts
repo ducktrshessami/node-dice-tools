@@ -16,12 +16,17 @@ export function getRollMethod(): RollMethod {
     return rollMethod ?? defaultRollMethod;
 }
 
+export type Bounds = [number, number];
+export type ExplodeOption = boolean | number | Bounds;
+
 export class RollResult {
     public readonly raw: readonly number[];
+    public readonly explode: ExplodeOption;
 
-    constructor(raw: number[]) {
+    constructor(raw: number[], explode?: ExplodeOption) {
         validateNonEmptyArray(raw);
         this.raw = Object.freeze(raw);
+        this.explode = explode ?? false;
     }
 
     get value(): number {
@@ -74,6 +79,11 @@ export class MultiRollResult {
         this.results = Object.freeze(results);
     }
 
+    get explode(): ExplodeOption {
+        const result = this.results.find(result => result.explode !== false);
+        return result?.explode ?? false;
+    }
+
     get highest(): RollResult {
         return this.results.reduce((highest, result) => result.value > highest.value ? result : highest);
     }
@@ -82,9 +92,6 @@ export class MultiRollResult {
         return this.results.reduce((lowest, result) => result.value < lowest.value ? result : lowest);
     }
 }
-
-export type Bounds = [number, number];
-export type ExplodeOption = boolean | number | Bounds;
 
 export function rawRoll(
     count: number,
@@ -112,7 +119,7 @@ export function rawRoll(
             i--;
         }
     }
-    return new RollResult(result);
+    return new RollResult(result, explode);
 }
 
 export function roll(
