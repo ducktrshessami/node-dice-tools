@@ -93,6 +93,21 @@ export class MultiRollResult {
     }
 }
 
+function isExplode(
+    value: number,
+    sides: number,
+    explode?: ExplodeOption
+): boolean {
+    if (!explode) {
+        return false;
+    }
+    switch (typeof explode) {
+        case "boolean": return value === sides;
+        case "number": return value === explode;
+        default: return value >= explode[0] && value <= explode[1];
+    }
+}
+
 export function rawRoll(
     count: number,
     sides: number,
@@ -100,26 +115,15 @@ export function rawRoll(
 ): RollResult {
     const method = getRollMethod();
     const result: number[] = [];
+    const explodeOption = Array.isArray(explode) ? <Bounds>explode.slice(0, 2).sort() : explode;
     for (let i = 0; i < count; i++) {
         const value = method(sides);
         result.push(value);
-        if (
-            explode && (
-                explode === true ?
-                    value === sides
-                    : (
-                        typeof explode === "number" ?
-                            value === explode : (
-                                value >= Math.min(...explode) &&
-                                value <= Math.max(...explode)
-                            )
-                    )
-            )
-        ) {
+        if (isExplode(value, sides, explodeOption)) {
             i--;
         }
     }
-    return new RollResult(result, explode);
+    return new RollResult(result, explodeOption);
 }
 
 export function roll(
