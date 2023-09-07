@@ -1,9 +1,12 @@
 type RollMethod = (sides: number) => number;
 declare function setRollMethod(method: RollMethod | null): void;
 declare function getRollMethod(): RollMethod;
+type Bounds = [number, number];
+type ExplodeOption = boolean | number | Bounds | Readonly<Bounds>;
 declare class RollResult {
+    readonly explode: Readonly<ExplodeOption>;
     readonly raw: readonly number[];
-    constructor(raw: number[]);
+    constructor(raw: number[], explode: Readonly<ExplodeOption>);
     get value(): number;
     getHits(threshold: number): number;
     getMisses(threshold: number): number;
@@ -13,14 +16,14 @@ declare class RollResult {
 declare class MultiRollResult {
     readonly results: readonly RollResult[];
     constructor(results: RollResult[]);
+    get explode(): Readonly<ExplodeOption>;
     get highest(): RollResult;
     get lowest(): RollResult;
 }
-type Bounds = [number, number];
-declare function roll(count: number, sides: number, explode?: number | Bounds): RollResult;
-declare function rollMulti(count: number, sides: number, rolls: number, explode?: number | Bounds): MultiRollResult;
-declare function rollAdvantage(count: number, sides: number, explode?: number | Bounds): RollResult;
-declare function rollDisadvantage(count: number, sides: number, explode?: number | Bounds): RollResult;
+declare function roll(count: number, sides: number, explode?: ExplodeOption): RollResult;
+declare function rollMulti(count: number, sides: number, rolls: number, explode?: ExplodeOption): MultiRollResult;
+declare function rollAdvantage(count: number, sides: number, explode?: ExplodeOption): RollResult;
+declare function rollDisadvantage(count: number, sides: number, explode?: ExplodeOption): RollResult;
 
 declare class RollQueryItem {
     count: number;
@@ -32,10 +35,10 @@ declare class RollQueryItem {
     get min(): number;
     get max(): number;
     get lastValue(): number | null;
-    roll(explode?: number | Bounds): number;
-    rollMulti(rolls: number, explode?: number | Bounds): MultiRollResult;
-    rollAdvantage(explode?: number | Bounds): number;
-    rollDisadvantage(explode?: number | Bounds): number;
+    roll(explode?: ExplodeOption): number;
+    rollMulti(rolls: number, explode?: ExplodeOption): MultiRollResult;
+    rollAdvantage(explode?: ExplodeOption): number;
+    rollDisadvantage(explode?: ExplodeOption): number;
     toString(forceSign?: boolean): string;
 }
 type RollQueryOptions = {
@@ -53,9 +56,9 @@ declare class RollQuery {
     get max(): number;
     get lastNat(): number | null;
     get lastValue(): number | null;
-    roll(): number;
-    rollAdvantage(): number;
-    rollDisadvantage(): number;
+    roll(explode?: ExplodeOption): number;
+    rollAdvantage(explode?: ExplodeOption): number;
+    rollDisadvantage(explode?: ExplodeOption): number;
     toString(): string;
 }
 
