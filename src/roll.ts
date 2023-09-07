@@ -16,10 +16,13 @@ export function getRollMethod(): RollMethod {
     return rollMethod ?? defaultRollMethod;
 }
 
+export type Bounds = [number, number];
+export type ExplodeOption = boolean | number | Bounds | Readonly<Bounds>;
+
 export class RollResult {
     public readonly raw: readonly number[];
 
-    constructor(raw: number[]) {
+    constructor(raw: number[], public readonly explode: Readonly<ExplodeOption>) {
         validateNonEmptyArray(raw);
         this.raw = Object.freeze(raw);
     }
@@ -74,6 +77,11 @@ export class MultiRollResult {
         this.results = Object.freeze(results);
     }
 
+    get explode(): Readonly<ExplodeOption> {
+        const result = this.results.find(result => result.explode !== false);
+        return result?.explode ?? false;
+    }
+
     get highest(): RollResult {
         return this.results.reduce((highest, result) => result.value > highest.value ? result : highest);
     }
@@ -83,47 +91,62 @@ export class MultiRollResult {
     }
 }
 
-export type Bounds = [number, number];
+export function resolveExplodeOption(explode?: ExplodeOption): Readonly<ExplodeOption> {
+    return Array.isArray(explode) ?
+        <Readonly<Bounds>>Object.freeze(explode.slice(0, 2).sort()) :
+        explode ?? false;
+}
+
+export function isResolvedExplodeOption(explode?: ExplodeOption | Readonly<ExplodeOption>): explode is Readonly<ExplodeOption> | undefined {
+    return Array.isArray(explode) ? Object.isFrozen(explode) : true;
+}
+
+function isExplode(
+    value: number,
+    sides: number,
+    explode: Readonly<ExplodeOption>
+): boolean {
+    if (!explode) {
+        return false;
+    }
+    switch (typeof explode) {
+        case "boolean": return value === sides;
+        case "number": return value === explode;
+        default: return value >= explode[0] && value <= explode[1];
+    }
+}
 
 export function rawRoll(
     count: number,
     sides: number,
-    explode?: number | Bounds
+    explode: Readonly<ExplodeOption>
 ): RollResult {
     const method = getRollMethod();
     const result: number[] = [];
     for (let i = 0; i < count; i++) {
         const value = method(sides);
         result.push(value);
-        if (
-            explode && (
-                typeof explode === "number" ?
-                    value === explode : (
-                        value >= Math.min(...explode) &&
-                        value <= Math.max(...explode)
-                    )
-            )
-        ) {
+        if (isExplode(value, sides, explode)) {
             i--;
         }
     }
-    return new RollResult(result);
+    return new RollResult(result, explode);
 }
 
 export function roll(
     count: number,
     sides: number,
-    explode?: number | Bounds
+    explode?: ExplodeOption
 ): RollResult {
     validateDiceAttributes(count, sides);
-    return rawRoll(count, sides, explode);
+    return rawRoll(count, sides, resolveExplodeOption(explode));
 }
 
 export function rawRollMulti(
     count: number,
     sides: number,
     rolls: number,
-    explode?: number | Bounds
+    explode: Readonly<ExplodeOption>
 ): MultiRollResult {
     const results: RollResult[] = [];
     for (let i = 0; i < rolls; i++) {
@@ -136,18 +159,26 @@ export function rollMulti(
     count: number,
     sides: number,
     rolls: number,
-    explode?: number | Bounds
+    explode?: ExplodeOption
 ): MultiRollResult {
     validateDiceAttributes(count, sides);
-    return rawRollMulti(count, sides, rolls, explode);
+    return rawRollMulti(count, sides, rolls, resolveExplodeOption(explode));
 }
 
-export function rollAdvantage(count: number, sides: number, explode?: number | Bounds): RollResult {
+export function rollAdvantage(
+    count: number,
+    sides: number,
+    explode?: ExplodeOption
+): RollResult {
     const { highest } = rollMulti(count, sides, 2, explode);
     return highest;
 }
 
-export function rollDisadvantage(count: number, sides: number, explode?: number | Bounds): RollResult {
+export function rollDisadvantage(
+    count: number,
+    sides: number,
+    explode?: ExplodeOption
+): RollResult {
     const { lowest } = rollMulti(count, sides, 2, explode);
     return lowest;
 }
