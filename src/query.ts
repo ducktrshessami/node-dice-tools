@@ -4,7 +4,8 @@ import {
     rawRoll,
     rawRollMulti,
     ExplodeOption,
-    resolveExplodeOption
+    resolveExplodeOption,
+    isResolvedExplodeOption
 } from "./roll";
 import {
     RollQueryItemPattern,
@@ -41,24 +42,28 @@ export class RollQueryItem {
     }
 
     roll(explode?: ExplodeOption): number {
-        this.lastResult = rawRoll(this.count, this.sides, resolveExplodeOption(explode));
+        const explodeOption = isResolvedExplodeOption(explode) ? explode ?? false : resolveExplodeOption(explode);
+        this.lastResult = rawRoll(this.count, this.sides, explodeOption);
         return this.lastValue!;
     }
 
     rollMulti(rolls: number, explode?: ExplodeOption): MultiRollResult {
-        const result = rawRollMulti(this.count, this.sides, rolls, explode);
+        const explodeOption = isResolvedExplodeOption(explode) ? explode ?? false : resolveExplodeOption(explode);
+        const result = rawRollMulti(this.count, this.sides, rolls, explodeOption);
         this.lastResult = result.results[rolls - 1];
         return result;
     }
 
     rollAdvantage(explode?: ExplodeOption): number {
-        const { highest } = rawRollMulti(this.count, this.sides, 2, explode);
+        const explodeOption = isResolvedExplodeOption(explode) ? explode ?? false : resolveExplodeOption(explode);
+        const { highest } = rawRollMulti(this.count, this.sides, 2, explodeOption);
         this.lastResult = highest;
         return this.lastValue!;
     }
 
     rollDisadvantage(explode?: ExplodeOption): number {
-        const { lowest } = rawRollMulti(this.count, this.sides, 2, explode);
+        const explodeOption = isResolvedExplodeOption(explode) ? explode ?? false : resolveExplodeOption(explode);
+        const { lowest } = rawRollMulti(this.count, this.sides, 2, explodeOption);
         this.lastResult = lowest;
         return this.lastValue!;
     }
@@ -142,15 +147,18 @@ export class RollQuery {
     }
 
     roll(explode?: ExplodeOption): number {
-        return this.items.reduce((result, item) => result + item.roll(explode), this.constant);
+        const explodeOption = resolveExplodeOption(explode);
+        return this.items.reduce((result, item) => result + item.roll(explodeOption), this.constant);
     }
 
     rollAdvantage(explode?: ExplodeOption): number {
-        return this.items.reduce((result, item) => result + item.rollAdvantage(explode), this.constant);
+        const explodeOption = resolveExplodeOption(explode);
+        return this.items.reduce((result, item) => result + item.rollAdvantage(explodeOption), this.constant);
     }
 
     rollDisadvantage(explode?: ExplodeOption): number {
-        return this.items.reduce((result, item) => result + item.rollDisadvantage(explode), this.constant);
+        const explodeOption = resolveExplodeOption(explode);
+        return this.items.reduce((result, item) => result + item.rollDisadvantage(explodeOption), this.constant);
     }
 
     toString(): string {

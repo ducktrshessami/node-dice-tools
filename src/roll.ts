@@ -17,7 +17,7 @@ export function getRollMethod(): RollMethod {
 }
 
 export type Bounds = [number, number];
-export type ExplodeOption = boolean | number | Bounds;
+export type ExplodeOption = boolean | number | Bounds | Readonly<Bounds>;
 
 export class RollResult {
     public readonly raw: readonly number[];
@@ -97,6 +97,10 @@ export function resolveExplodeOption(explode?: ExplodeOption): Readonly<ExplodeO
         explode ?? false;
 }
 
+export function isResolvedExplodeOption(explode?: ExplodeOption | Readonly<ExplodeOption>): explode is Readonly<ExplodeOption> | undefined {
+    return Array.isArray(explode) ? Object.isFrozen(explode) : true;
+}
+
 function isExplode(
     value: number,
     sides: number,
@@ -142,12 +146,11 @@ export function rawRollMulti(
     count: number,
     sides: number,
     rolls: number,
-    explode?: ExplodeOption
+    explode: Readonly<ExplodeOption>
 ): MultiRollResult {
     const results: RollResult[] = [];
-    const explodeOption = resolveExplodeOption(explode);
     for (let i = 0; i < rolls; i++) {
-        results.push(rawRoll(count, sides, explodeOption));
+        results.push(rawRoll(count, sides, explode));
     }
     return new MultiRollResult(results);
 }
@@ -159,7 +162,7 @@ export function rollMulti(
     explode?: ExplodeOption
 ): MultiRollResult {
     validateDiceAttributes(count, sides);
-    return rawRollMulti(count, sides, rolls, explode);
+    return rawRollMulti(count, sides, rolls, resolveExplodeOption(explode));
 }
 
 export function rollAdvantage(
