@@ -163,9 +163,13 @@ export class RollQuery {
 
     toString(): string {
         if (!this.items.length) {
-            return this.constant < 0 ? "-" + this.constant : this.constant.toString();
+            return this.constant.toString();
         }
-        const constant = this.constant ? (this.constant < 0 ? "-" : "+") + this.constant : "";
+        const constant = this.constant ?
+            this.constant < 0 ?
+                this.constant.toString() :
+                "+" + this.constant :
+            "";
         let query = this.items[0].toString();
         for (let i = 1; i < this.items.length; i++) {
             query += this.items[i].toString(true);
