@@ -1,6 +1,6 @@
 {
   "name": "dice-tools",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Standard dice notation parsing and rolling",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
