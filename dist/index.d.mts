@@ -70,4 +70,4 @@ declare const RollQueryPattern: RegExp;
  */
 declare const RollQueryItemPattern: RegExp;
 
-export { Bounds, MultiRollResult, RollMethod, RollQuery, RollQueryItem, RollQueryItemPattern, RollQueryOptions, RollQueryPattern, RollResult, getRollMethod, roll, rollAdvantage, rollDisadvantage, rollMulti, setRollMethod };
+export { type Bounds, MultiRollResult, type RollMethod, RollQuery, RollQueryItem, RollQueryItemPattern, type RollQueryOptions, RollQueryPattern, RollResult, getRollMethod, roll, rollAdvantage, rollDisadvantage, rollMulti, setRollMethod };
