@@ -74,4 +74,4 @@ export declare const RollQueryPattern: RegExp;
 export declare const RollQueryItemPattern: RegExp;
 //#endregion
 export type { Bounds, RollMethod };
-//# sourceMappingURL=index.d.mts.map
+//# sourceMappingURL=index.d.cts.map
