@@ -1,11 +1,11 @@
 import {
+    ExplodeOption,
     MultiRollResult,
     RollResult,
+    isResolvedExplodeOption,
     rawRoll,
     rawRollMulti,
-    ExplodeOption,
-    resolveExplodeOption,
-    isResolvedExplodeOption
+    resolveExplodeOption
 } from "./roll";
 import {
     RollQueryItemPattern,
@@ -50,7 +50,7 @@ export class RollQueryItem {
     rollMulti(rolls: number, explode?: ExplodeOption): MultiRollResult {
         const explodeOption = isResolvedExplodeOption(explode) ? explode ?? false : resolveExplodeOption(explode);
         const result = rawRollMulti(this.count, this.sides, rolls, explodeOption);
-        this.lastResult = result.results[rolls - 1];
+        this.lastResult = result.results[rolls - 1]!;
         return result;
     }
 
@@ -96,12 +96,12 @@ export class RollQuery {
         const matches = query.matchAll(RollQueryItemPattern);
         for (const match of matches) {
             if (match.groups?.count == null) {
-                q.constant += parseInt(match.groups!.sides) * (match.groups!.sign === "-" ? -1 : 1);
+                q.constant += parseInt(match.groups!.sides!) * (match.groups!.sign === "-" ? -1 : 1);
             }
             else try {
                 q.items.push(new RollQueryItem(
                     match.groups.count ? parseInt(match.groups.count) : 1,
-                    parseInt(match.groups.sides),
+                    parseInt(match.groups.sides!),
                     match.groups.sign === "-"
                 ));
             }
@@ -170,9 +170,9 @@ export class RollQuery {
                 this.constant.toString() :
                 "+" + this.constant :
             "";
-        let query = this.items[0].toString();
+        let query = this.items[0]!.toString();
         for (let i = 1; i < this.items.length; i++) {
-            query += this.items[i].toString(true);
+            query += this.items[i]!.toString(true);
         }
         return query + constant;
     }

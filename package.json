@@ -9,6 +9,7 @@
   "author": "ducktrshessami",
   "license": "MIT",
   "scripts": {
+    "prebuild": "tsc --noEmit",
     "build": "tsdown"
   },
   "exports": {
