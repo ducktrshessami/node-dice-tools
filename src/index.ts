@@ -1,14 +1,14 @@
 export * from "./query";
 export {
-    Bounds,
-    MultiRollResult,
-    RollMethod,
-    RollResult,
     getRollMethod,
+    MultiRollResult,
     roll,
     rollAdvantage,
     rollDisadvantage,
     rollMulti,
-    setRollMethod
+    RollResult,
+    setRollMethod,
+    type Bounds,
+    type RollMethod
 } from "./roll";
 export { RollQueryItemPattern, RollQueryPattern } from "./validate";
